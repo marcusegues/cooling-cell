@@ -1,0 +1,48 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "private": true,
+  "dependencies": {
+    "expo": "^27.0.1",
+    "react": "16.3.1",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-27.0.0.tar.gz",
+    "react-navigation": "^2.0.1",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-devtools-extension": "^2.13.2",
+    "redux-thunk": "^2.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.3",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-react-native": "^4.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-flowtype": "^2.47.1",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-react": "^7.8.2",
+    "eslint-plugin-standard": "^3.1.0",
+    "flow": "^0.2.3",
+    "flow-bin": "^0.72.0",
+    "jest": "^22.4.4",
+    "prettier": "^1.12.1",
+    "react-devtools": "^3.2.3"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "lint:tough": "eslint src --max-warnings=0",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "test:coverage": "jest --coverage",
+    "test:coverage:ci": "jest --coverage --maxWorkers 2",
+    "test:coverage:watch": "jest --watchAll --coverage",
+    "flow": "flow",
+    "flow:coverage": "flow-coverage-report -i 'src/**/*.js' -x 'src/**/__tests__/**' -t html -t json -t text --threshold 90"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  }
+}
