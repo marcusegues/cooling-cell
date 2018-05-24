@@ -1,5 +1,5 @@
 import { createStackNavigator } from 'react-navigation';
-import { ProductScanContainer } from '../components/ProductScan/ProductScanContainer';
+import ProductScanContainer from '../components/ProductScan/ProductScanContainer';
 export type NavigationObject = { navigation: Navigation };
 
 export const stackNavigatorScreens = {
@@ -11,4 +11,6 @@ export const stackNavigatorScreens = {
   },
 };
 
-export const RootStackNavigator = createStackNavigator(stackNavigatorScreens);
+export const RootStackNavigator = createStackNavigator(stackNavigatorScreens, {
+  initialRouteName: 'ProductScan',
+});

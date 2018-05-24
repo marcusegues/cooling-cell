@@ -1,10 +1,14 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 
-class ProductScanContainerInner extends React.Component {
+export default class ProductScanContainerInner extends React.Component {
   render() {
-    return <View>Hello ahdflahglaglaf ldfjalkgjalgkj dgaklgja</View>;
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ color: 'red' }}>
+          Hello ahdflahglaglaf ldfjalkgjalgkj dgaklgja
+        </Text>
+      </View>
+    );
   }
 }
-
-export const ProductScanContainer = ProductScanContainerInner;
