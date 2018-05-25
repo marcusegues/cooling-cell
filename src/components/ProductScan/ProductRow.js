@@ -1,5 +1,11 @@
 import React from 'react';
-import { Dimensions, View, Text, TouchableHighlight } from 'react-native';
+import {
+  Dimensions,
+  View,
+  Text,
+  TouchableHighlight,
+  Button,
+} from 'react-native';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -15,6 +21,7 @@ class ProductRow extends React.Component {
       console.log('Y offset to frame: ' + fy);
       console.log('X offset to page: ' + px);
       console.log('Y offset to page: ' + py);
+      this.props.onSelectRow(this.props.order, py);
     });
   }
 
@@ -24,7 +31,7 @@ class ProductRow extends React.Component {
   }
 
   render() {
-    const { order, handlePress, zIndex } = this.props;
+    const { top, expanded, zIndex } = this.props;
     return (
       <View
         ref={view => {
@@ -37,7 +44,7 @@ class ProductRow extends React.Component {
           alignItems: 'center',
           position: 'absolute',
           justifyContent: 'flex-end',
-          top: -height + order * rowHeight,
+          top,
           height,
           width,
           borderWidth: 3,
@@ -51,6 +58,7 @@ class ProductRow extends React.Component {
           <View>
             <Text style={{ color: 'red' }}>Hello</Text>
             <Text style={{ color: 'red' }}>You</Text>
+            {expanded ? <Button title={'Go Back'} /> : null}
           </View>
         </TouchableHighlight>
       </View>
