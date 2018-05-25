@@ -12,11 +12,24 @@ class ProductScanContainerInner extends React.Component {
     super(props);
     this.state = {
       top: this.initialTop(),
-      startScroll: 0,
-      expanded: 0,
-      expandedOffset: 0,
-      scrollEnabled: true,
+      expanded: this.props.expanded || 0,
+      currentScroll: 0,
+      scrollBeforeExpand: 0,
+      unselectedEvent: false,
     };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.unselectedEvent) {
+      setTimeout(
+        () =>
+          this.scrollview.scrollTo({ x: 0, y: this.state.scrollBeforeExpand }),
+        100
+      );
+      this.setState({
+        unselectedEvent: false,
+      });
+    }
   }
 
   initialState() {}
@@ -42,26 +55,56 @@ class ProductScanContainerInner extends React.Component {
         top[idx] = -height + (idx + 1) * rowHeight + (height - rowHeight);
       }
     });
+    this.setState(
+      {
+        top: { ...this.initialTop(), ...top },
+        expanded: order,
+        scrollBeforeExpand: this.state.currentScroll,
+      },
+      () => {
+        // debugger;
+        this.scrollview.scrollTo({ x: 0, y: (order - 1) * rowHeight });
+      }
+    );
+  }
 
-    this.scrollview.scrollTo({ x: 0, y: (order - 1) * rowHeight });
+  handleUnselectRow() {
+    this.setState(
+      {
+        expanded: 0,
+        top: this.initialTop(),
+        unselectedEvent: true,
+      },
+      () => {
+        // debugger;
+        // this.scrollview.scrollTo({ x: 0, y: this.state.scrollBeforeExpand });
+      }
+    );
+  }
+
+  expandedOffset() {
+    return this.state.expanded !== 0 ? height - rowHeight : 0;
+  }
+
+  handleScroll(event) {
+    console.log('Scroll', event.nativeEvent.contentOffset.y);
     this.setState({
-      top: { ...this.initialTop(), ...top },
-      expanded: order,
-      expandedOffset: height - rowHeight,
-      scrollEnabled: false,
+      currentScroll: event.nativeEvent.contentOffset.y,
     });
   }
 
   render() {
-    const { allProducts } = this.props;
-    const { top, startScroll } = this.state;
+    const { allProducts, startScroll } = this.props;
+    const { top } = this.state;
     const numberProducts = this.numberProducts();
 
     return (
       <View style={{ height }}>
         <ScrollView
-          startScroll={startScroll}
-          scrollEnabled={this.state.scrollEnabled}
+          onScroll={event => this.handleScroll(event)}
+          scrollEventThrottle={1}
+          startScroll={startScroll || 0}
+          scrollEnabled={this.state.expanded === 0}
           ref={scrollview => {
             this.scrollview = scrollview;
           }}
@@ -76,11 +119,12 @@ class ProductScanContainerInner extends React.Component {
               onSelectRow={(order, offsetToPage) =>
                 this.handleSelectRow(order, offsetToPage)
               }
+              onUnselectRow={() => this.handleUnselectRow()}
             />
           ))}
           <View
             style={{
-              height: rowHeight * numberProducts + this.state.expandedOffset,
+              height: rowHeight * numberProducts + this.expandedOffset(),
             }}
           />
         </ScrollView>

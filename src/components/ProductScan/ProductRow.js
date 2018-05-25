@@ -58,7 +58,9 @@ class ProductRow extends React.Component {
           <View>
             <Text style={{ color: 'red' }}>Hello</Text>
             <Text style={{ color: 'red' }}>You</Text>
-            {expanded ? <Button title={'Go Back'} /> : null}
+            {expanded ? (
+              <Button onPress={this.props.onUnselectRow} title={'Go Back'} />
+            ) : null}
           </View>
         </TouchableHighlight>
       </View>
