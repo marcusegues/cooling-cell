@@ -35,7 +35,11 @@ class ProductRow extends React.Component {
   render() {
     const { top, expanded, zIndex } = this.props;
     return (
-      <Animated.View
+      <View
+        ref={view => {
+          this.viewComponent = view;
+        }}
+        onLayout={event => this.handleOnLayout(event)}
         style={{
           position: 'absolute',
           top,
@@ -49,33 +53,19 @@ class ProductRow extends React.Component {
           borderTopColor: 'red',
         }}
       >
-        <View
-          ref={view => {
-            this.viewComponent = view;
-          }}
-          onLayout={event => this.handleOnLayout(event)}
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            height: '100%',
-            width: '100%',
-          }}
+        <TouchableHighlight
+          style={{ height: rowHeight, width: '100%' }}
+          onPress={() => this.handlePress()}
         >
-          <TouchableHighlight
-            style={{ height: rowHeight, width: '100%' }}
-            onPress={() => this.handlePress()}
-          >
-            <View>
-              <Text style={{ color: 'red' }}>Hello</Text>
-              <Text style={{ color: 'red' }}>You</Text>
-              {expanded ? (
-                <Button onPress={this.props.onUnselectRow} title={'Go Back'} />
-              ) : null}
-            </View>
-          </TouchableHighlight>
-        </View>
-      </Animated.View>
+          <View>
+            <Text style={{ color: 'red' }}>Hello</Text>
+            <Text style={{ color: 'red' }}>You</Text>
+            {expanded ? (
+              <Button onPress={this.props.onUnselectRow} title={'Go Back'} />
+            ) : null}
+          </View>
+        </TouchableHighlight>
+      </View>
     );
   }
 }
