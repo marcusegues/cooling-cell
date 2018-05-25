@@ -1,10 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FlatList, ScrollView, Text, Dimensions, View } from 'react-native';
+import {
+  FlatList,
+  ScrollView,
+  Text,
+  Dimensions,
+  View,
+  Animated,
+} from 'react-native';
 import { ProductRow } from './ProductRow';
 
 const height = Dimensions.get('window').height;
-const width = Dimensions.get('window').width;
 const rowHeight = height / 8;
 
 class ProductScanContainerInner extends React.Component {
@@ -16,6 +22,8 @@ class ProductScanContainerInner extends React.Component {
       currentScroll: 0,
       scrollBeforeExpand: 0,
       unselectedEvent: false,
+      py: 0,
+      viewHeights: {},
     };
   }
 
@@ -32,52 +40,95 @@ class ProductScanContainerInner extends React.Component {
     }
   }
 
-  initialState() {}
-
   initialTop() {
     const range = [...Array(this.numberProducts()).keys()];
     const top = {};
     range.forEach(idx => {
-      top[idx] = -height + (idx + 1) * rowHeight;
+      top[idx] = new Animated.Value(-height + (idx + 1) * rowHeight);
     });
     return top;
+  }
+
+  handleLayout(order, height) {
+    this.setState({
+      viewHeights: { ...this.state.viewHeights, [order]: height },
+    });
   }
 
   numberProducts() {
     return this.props.allProducts.length;
   }
 
-  handleSelectRow(order, offsetToPage) {
+  handleSelectRow(order, py) {
+    const { viewHeights } = this.state;
     const range = [...Array(this.numberProducts()).keys()];
-    const top = {};
-    range.forEach(idx => {
-      if (idx + 1 >= order) {
-        top[idx] = -height + (idx + 1) * rowHeight + (height - rowHeight);
-      }
-    });
     this.setState(
       {
-        top: { ...this.initialTop(), ...top },
         expanded: order,
         scrollBeforeExpand: this.state.currentScroll,
+        py,
       },
       () => {
-        // debugger;
-        this.scrollview.scrollTo({ x: 0, y: (order - 1) * rowHeight });
+        range.forEach(idx => {
+          if (idx + 1 < order) {
+            Animated.timing(
+              // Animate over time
+              this.state.top[idx], // The animated value to drive
+              {
+                toValue:
+                  -height + (idx + 1) * rowHeight - (height - rowHeight + py), // Animate to opacity: 1 (opaque)
+                duration: 1000, // Make it take a while
+              }
+            ).start();
+          }
+          if (idx + 1 >= order) {
+            Animated.timing(
+              // Animate over time
+              this.state.top[idx], // The animated value to drive
+              {
+                toValue: -height + (idx + 1) * rowHeight - py, // Animate to opacity: 1 (opaque)
+                duration: 1000, // Make it take a while
+              }
+            ).start();
+          }
+        }); // Starts the animation
+        // this.scrollview.scrollTo({ x: 0, y: (order - 1) * rowHeight });
       }
     );
   }
 
   handleUnselectRow() {
+    const range = [...Array(this.numberProducts()).keys()];
+    const { py, expanded } = this.state;
+    const order = expanded;
     this.setState(
       {
         expanded: 0,
-        top: this.initialTop(),
-        unselectedEvent: true,
       },
       () => {
-        // debugger;
-        // this.scrollview.scrollTo({ x: 0, y: this.state.scrollBeforeExpand });
+        range.forEach(idx => {
+          if (idx + 1 < order) {
+            Animated.timing(
+              // Animate over time
+              this.state.top[idx], // The animated value to drive
+              {
+                toValue: -height + (idx + 1) * rowHeight, // Animate to opacity: 1 (opaque)
+                duration: 1000, // Make it take a while
+              }
+            ).start();
+          }
+          if (idx + 1 >= order) {
+            Animated.timing(
+              // Animate over time
+              this.state.top[idx], // The animated value to drive
+              {
+                toValue: -height + (idx + 1) * rowHeight, // Animate to opacity: 1 (opaque)
+                duration: 1000, // Make it take a while
+              }
+            ).start();
+          }
+        }); // Starts the animation
+        // this.scrollview.scrollTo({ x: 0, y: (order - 1) * rowHeight });
       }
     );
   }
@@ -101,8 +152,6 @@ class ProductScanContainerInner extends React.Component {
     return (
       <View style={{ height }}>
         <ScrollView
-          onScroll={event => this.handleScroll(event)}
-          scrollEventThrottle={1}
           startScroll={startScroll || 0}
           scrollEnabled={this.state.expanded === 0}
           ref={scrollview => {
@@ -120,6 +169,7 @@ class ProductScanContainerInner extends React.Component {
                 this.handleSelectRow(order, offsetToPage)
               }
               onUnselectRow={() => this.handleUnselectRow()}
+              onLayout={(order, height) => this.handleLayout(order, height)}
             />
           ))}
           <View

@@ -5,6 +5,7 @@ import {
   Text,
   TouchableHighlight,
   Button,
+  Animated,
 } from 'react-native';
 
 const height = Dimensions.get('window').height;
@@ -28,42 +29,53 @@ class ProductRow extends React.Component {
   handleOnLayout(event) {
     const { x, y, width, height } = event.nativeEvent.layout;
     console.log('OnLayout', this.props.order, x, y, width, height);
+    this.props.onLayout(this.props.order, height);
   }
 
   render() {
     const { top, expanded, zIndex } = this.props;
     return (
-      <View
-        ref={view => {
-          this.viewComponent = view;
-        }}
-        onLayout={event => this.handleOnLayout(event)}
+      <Animated.View
         style={{
-          flex: 1,
-          zIndex,
-          alignItems: 'center',
           position: 'absolute',
-          justifyContent: 'flex-end',
           top,
           height,
           width,
+          flex: 1,
+          zIndex,
+          alignItems: 'center',
+          justifyContent: 'flex-end',
           borderWidth: 3,
           borderTopColor: 'red',
         }}
       >
-        <TouchableHighlight
-          style={{ height: rowHeight, width: '100%' }}
-          onPress={() => this.handlePress()}
+        <View
+          ref={view => {
+            this.viewComponent = view;
+          }}
+          onLayout={event => this.handleOnLayout(event)}
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            height: '100%',
+            width: '100%',
+          }}
         >
-          <View>
-            <Text style={{ color: 'red' }}>Hello</Text>
-            <Text style={{ color: 'red' }}>You</Text>
-            {expanded ? (
-              <Button onPress={this.props.onUnselectRow} title={'Go Back'} />
-            ) : null}
-          </View>
-        </TouchableHighlight>
-      </View>
+          <TouchableHighlight
+            style={{ height: rowHeight, width: '100%' }}
+            onPress={() => this.handlePress()}
+          >
+            <View>
+              <Text style={{ color: 'red' }}>Hello</Text>
+              <Text style={{ color: 'red' }}>You</Text>
+              {expanded ? (
+                <Button onPress={this.props.onUnselectRow} title={'Go Back'} />
+              ) : null}
+            </View>
+          </TouchableHighlight>
+        </View>
+      </Animated.View>
     );
   }
 }
