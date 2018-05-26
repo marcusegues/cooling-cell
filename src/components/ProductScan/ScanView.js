@@ -5,11 +5,13 @@ import { BarCodeScanner, Permissions } from 'expo';
 import Touchable from 'react-native-platform-touchable';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { AppText } from '../General/AppText';
+import { Bins } from './Bins';
 
 class ScanViewInner extends React.Component {
   state = {
     scan: false,
-    scanViewFlex: new Animated.Value(1),
+    successfulScan: false,
+    scanViewFlex: new Animated.Value(0.5),
   };
 
   async handleStartScan() {
@@ -34,13 +36,15 @@ class ScanViewInner extends React.Component {
       // Animate over time
       this.state.scanViewFlex, // The animated value to drive
       {
-        toValue: 10, // Animate to opacity: 1 (opaque)
+        toValue: 5, // Animate to opacity: 1 (opaque)
         duration: 100, // Make it take a while
       }
     ).start();
   }
 
   _handleBarCodeRead = ({ type, data }) => {
+    console.log('barcode read');
+    this.setState({ successfulScan: true });
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
 
@@ -74,7 +78,9 @@ class ScanViewInner extends React.Component {
         >
           {this.state.scan ? (
             <BarCodeScanner
-              onBarCodeRead={this._handleBarCodeRead}
+              onBarCodeRead={
+                this.state.successfulScan ? undefined : this._handleBarCodeRead
+              }
               style={StyleSheet.absoluteFill}
             />
           ) : (
@@ -83,15 +89,7 @@ class ScanViewInner extends React.Component {
             </Touchable>
           )}
         </Animated.View>
-        <View style={{ flex: 2 }}>
-          <FlatList
-            style={{
-              width: '100%',
-            }}
-            data={flatListData}
-            renderItem={({ item }) => item.component}
-          />
-        </View>
+        <Bins bins={bins} />
       </View>
     );
   }
