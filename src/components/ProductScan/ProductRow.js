@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Dimensions,
   View,
@@ -7,21 +8,29 @@ import {
   TouchableWithoutFeedback,
   Button,
   Animated,
+  StyleSheet,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import Touchable from 'react-native-platform-touchable';
+import { BarCodeScanner, Permissions } from 'expo';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+
+import { ScanView } from './ScanView';
+import { ProductRowFooter } from './ProductRowFooter';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 
 const rowHeight = height / 8;
 
-class ProductRow extends React.Component {
+class ProductRowInner extends React.Component {
   handlePress() {
     this.viewComponent.measure((fx, fy, width, height, px, py) => {
       this.props.onSelectRow(this.props.order, py);
     });
   }
+
+  _handleBarCodeRead = ({ type, data }) => {
+    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  };
 
   render() {
     const {
@@ -30,9 +39,10 @@ class ProductRow extends React.Component {
       zIndex,
       borderTopColor = 'white',
       borderBottomColor = 'black',
-      name,
-      bins,
+      product,
+      productId,
     } = this.props;
+    const { name, bins } = product;
     return (
       <View
         ref={view => {
@@ -47,44 +57,26 @@ class ProductRow extends React.Component {
           zIndex,
           alignItems: 'center',
           justifyContent: 'flex-end',
+          backgroundColor: 'white',
           borderWidth: 3,
           borderTopColor,
           borderBottomColor,
         }}
       >
-        <Touchable
-          style={{ height: rowHeight, width: '100%' }}
-          onPress={() => this.handlePress()}
-        >
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              height: '100%',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: 'open-sans-semi-bold',
-                color: 'red',
-                fontSize: 20,
-                lineHeight: 30,
-              }}
-            >
-              {name}
-            </Text>
-            {expanded ? (
-              <Touchable onPress={this.props.onUnselectRow}>
-                <MaterialIcons name="view-list" size={20} color="#757575" />
-              </Touchable>
-            ) : null}
-          </View>
-        </Touchable>
+        {expanded ? <ScanView productId={productId} /> : null}
+        <ProductRowFooter
+          expanded={expanded}
+          handlePress={() => this.handlePress()}
+          onUnselectRow={() => this.props.onUnselectRow()}
+          name={name}
+        />
       </View>
     );
   }
 }
 
-export { ProductRow };
+const mapStateToProps = (state, ownProps) => ({
+  product: state.products.byId[ownProps.productId],
+});
+
+export const ProductRow = connect(mapStateToProps, null)(ProductRowInner);

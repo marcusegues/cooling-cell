@@ -1,6 +1,7 @@
 // @flow
 import { combineReducers } from 'redux';
 import { products } from './products';
+import { permissions } from './permissions';
 import type { AppState } from '../types/reducers';
 
 /**
@@ -9,4 +10,5 @@ import type { AppState } from '../types/reducers';
  */
 export const root: AppState = combineReducers({
   products,
+  permissions,
 });

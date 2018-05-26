@@ -53,11 +53,10 @@ class ProductScanContainerInner extends React.Component {
       <Animated.View style={{ zIndex: 10, top: topBefore }}>
         {allProducts
           .slice(0, order - 1)
-          .map((product, idx) => (
+          .map((productId, idx) => (
             <ProductRow
-              key={product.name}
-              name={product.name}
-              bins={product.bins}
+              key={productId}
+              productId={productId}
               order={idx + 1}
               expanded={this.state.prepareForExpand === idx + 1}
               top={top[idx + 1]}
@@ -82,9 +81,8 @@ class ProductScanContainerInner extends React.Component {
     return (
       <Animated.View style={{ zIndex: 5, top: topAfter }}>
         <ProductRow
-          key={allProducts[prepareForExpand - 1].name}
-          name={allProducts[prepareForExpand - 1].name}
-          bins={allProducts[prepareForExpand - 1].bins}
+          key={allProducts[prepareForExpand - 1]}
+          productId={allProducts[prepareForExpand - 1]}
           order={prepareForExpand}
           expanded={this.state.prepareForExpand === prepareForExpand}
           top={top[prepareForExpand]}
@@ -107,13 +105,12 @@ class ProductScanContainerInner extends React.Component {
     console.log('After products', allProducts.slice(order));
     return (
       <Animated.View style={{ zIndex: 3, top: topAfter }}>
-        {allProducts.slice(order).map((product, idx) => {
+        {allProducts.slice(order).map((productId, idx) => {
           const currentOrder = order + idx + 1;
           return (
             <ProductRow
-              key={product.name}
-              name={product.name}
-              bins={product.bins}
+              key={productId}
+              productId={productId}
               order={currentOrder}
               expanded={this.state.prepareForExpand === currentOrder}
               top={top[currentOrder]}
@@ -133,59 +130,46 @@ class ProductScanContainerInner extends React.Component {
   handleSelectRow(order, py) {
     const { prepareForExpand } = this.state;
     this.setState({ prepareForExpand: order }, () => {
-      Animated.timing(
-        // Animate over time
-        this.state.topBefore, // The animated value to drive
-        {
-          toValue: -(height - rowHeight + py), // Animate to opacity: 1 (opaque)
-          duration: 1000, // Make it take a while
-        }
-      ).start();
-      Animated.timing(
-        // Animate over time
-        this.state.topAfter, // The animated value to drive
-        {
-          toValue: -py, // Animate to opacity: 1 (opaque)
-          duration: 1000, // Make it take a while
-        }
-      ).start();
+      Animated.parallel([
+        Animated.timing(
+          // Animate over time
+          this.state.topBefore, // The animated value to drive
+          {
+            toValue: -(height - rowHeight + py), // Animate to opacity: 1 (opaque)
+            duration: 150, // Make it take a while
+          }
+        ),
+        Animated.timing(
+          // Animate over time
+          this.state.topAfter, // The animated value to drive
+          {
+            toValue: -py,
+            duration: 150, // Make it take a while
+          }
+        ),
+      ]).start();
     });
   }
 
   handleUnselectRow() {
-    return new Promise(resolve => {
-      let beforeAnimationDone = false;
-      let afterAnimationDone = false;
+    Animated.parallel([
       Animated.timing(
         // Animate over time
         this.state.topBefore, // The animated value to drive
         {
-          toValue: 0, // Animate to opacity: 1 (opaque)
-          duration: 1000, // Make it take a while
+          toValue: 0,
+          duration: 150, // Make it take a while
         }
-      ).start(() => {
-        beforeAnimationDone = true;
-        if (beforeAnimationDone && afterAnimationDone) {
-          resolve();
-        }
-      });
+      ),
       Animated.timing(
         // Animate over time
         this.state.topAfter, // The animated value to drive
         {
-          toValue: 0, // Animate to opacity: 1 (opaque)
-          duration: 1000, // Make it take a while
+          toValue: 0,
+          duration: 150, // Make it take a while
         }
-      ).start(() => {
-        afterAnimationDone = true;
-        if (beforeAnimationDone && afterAnimationDone) {
-          resolve();
-        }
-      });
-    }).then(() => {
-      console.log(this.state);
-      // this.setState({ prepareForExpand: 0 });
-    });
+      ),
+    ]).start(() => this.setState({ prepareForExpand: 0 }));
   }
 
   expandedOffset() {
@@ -201,7 +185,7 @@ class ProductScanContainerInner extends React.Component {
       <View style={{ height }}>
         <ScrollView
           startScroll={startScroll || 0}
-          scrollEnabled={true}
+          scrollEnabled={this.state.prepareForExpand === 0}
           ref={scrollview => {
             this.scrollview = scrollview;
           }}
@@ -222,7 +206,7 @@ class ProductScanContainerInner extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  allProducts: state.products.allIds.map(id => state.products.byId[id]),
+  allProducts: state.products.allIds,
 });
 
 export default connect(mapStateToProps, null)(ProductScanContainerInner);

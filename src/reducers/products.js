@@ -5,7 +5,7 @@ import {
 
 export const products = (
   state: ProductsState = getInitialProductsState(),
-  action: DeclarationAction
+  action
 ): DeclarationState => {
   switch (action.type) {
     default: {
