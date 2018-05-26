@@ -1,40 +1,78 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { View, FlatList, Text } from 'react-native';
+import { View, FlatList, Text, Animated } from 'react-native';
+import { BarCodeScanner, Permissions } from 'expo';
+import Touchable from 'react-native-platform-touchable';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { AppText } from '../General/AppText';
 
 class ScanViewInner extends React.Component {
+  state = {
+    scan: false,
+    scanViewFlex: new Animated.Value(1),
+  };
+
+  async handleStartScan() {
+    if (this.props.hasCameraPermission === null) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      this.props
+        .setHasCameraPermission(status === 'granted')
+        .then(hasPermission => {
+          if (hasPermission) {
+            Animated.timing(
+              // Animate over time
+              this.state.scanViewFlex, // The animated value to drive
+              {
+                toValue: 10, // Animate to opacity: 1 (opaque)
+                duration: 100, // Make it take a while
+              }
+            ).start();
+          }
+        });
+    }
+  }
+
   render() {
     const { bins } = this.props;
-    console.log(bins);
     const flatListData = Object.keys(bins).map(binId => ({
       key: binId,
       component: (
-        <View style={{ height: 20, width: '100%' }}>
-          <Text>{binId}</Text>Text>
+        <View
+          style={{
+            width: '100%',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <AppText>{binId}</AppText>
+          <AppText>{`${bins[binId].scanned}/${bins[binId].total}`}</AppText>
         </View>
       ),
     }));
     return (
       <View style={{ flex: 1, width: '100%' }}>
-        <View
+        <Animated.View
           style={{
-            flex: 1,
+            flex: this.state.scanViewFlex,
             width: '100%',
             backgroundColor: 'black',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Ionicons name="ios-qr-scanner" size={60} color="#757575" />
+          <Touchable onPress={() => this.handleStartScan()}>
+            <Ionicons name="ios-qr-scanner" size={60} color="#757575" />
+          </Touchable>
+        </Animated.View>
+        <View style={{ flex: 2 }}>
+          <FlatList
+            style={{
+              width: '100%',
+            }}
+            data={flatListData}
+            renderItem={({ item }) => item.component}
+          />
         </View>
-        <FlatList
-          style={{
-            width: '100%',
-          }}
-          data={flatListData}
-          renderItem={({ item }) => item.component}
-        />
       </View>
     );
   }
@@ -42,6 +80,18 @@ class ScanViewInner extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
   bins: state.products.byId[ownProps.productId].bins,
+  hasCameraPermission: state.permissions.hasCameraPermission,
 });
 
-export const ScanView = connect(mapStateToProps, null)(ScanViewInner);
+const mapDispatchToProps = dispatch => ({
+  setHasCameraPermission: hasPermission => {
+    return new Promise(resolve => {
+      dispatch({ type: 'SET_HAS_CAMERA_PERMISSION', hasPermission });
+      resolve(hasPermission);
+    });
+  },
+});
+
+export const ScanView = connect(mapStateToProps, mapDispatchToProps)(
+  ScanViewInner
+);

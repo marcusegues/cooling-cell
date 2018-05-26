@@ -6,6 +6,9 @@ export const permissions = (
   action
 ): DeclarationState => {
   switch (action.type) {
+    case 'SET_HAS_CAMERA_PERMISSION': {
+      return { ...state, hasCameraPermission: action.hasPermission };
+    }
     default: {
       return state;
     }

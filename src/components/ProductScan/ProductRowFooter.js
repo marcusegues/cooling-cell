@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import Touchable from 'react-native-platform-touchable';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { AppText } from '../General/AppText';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -27,17 +28,8 @@ export const ProductRowFooter = ({
         justifyContent: 'space-between',
       }}
     >
-      <Text
-        style={{
-          fontFamily: 'open-sans-semi-bold',
-          color: 'red',
-          fontSize: 20,
-          lineHeight: 60,
-        }}
-      >
-        {name}
-      </Text>
-      <View style={{ height: 40 }}>
+      <AppText>{name}</AppText>
+      <View style={{ height: 40, alignItems: 'center' }}>
         {expanded ? (
           <Touchable onPress={onUnselectRow}>
             <MaterialIcons name="view-list" size={20} color="#757575" />
