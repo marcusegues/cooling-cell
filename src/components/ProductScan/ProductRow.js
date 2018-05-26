@@ -33,7 +33,13 @@ class ProductRow extends React.Component {
   }
 
   render() {
-    const { top, expanded, zIndex } = this.props;
+    const {
+      top,
+      expanded,
+      zIndex,
+      borderTopColor = 'red',
+      borderBottomColor = 'black',
+    } = this.props;
     return (
       <View
         ref={view => {
@@ -50,7 +56,8 @@ class ProductRow extends React.Component {
           alignItems: 'center',
           justifyContent: 'flex-end',
           borderWidth: 3,
-          borderTopColor: 'red',
+          borderTopColor,
+          borderBottomColor,
         }}
       >
         <TouchableHighlight
