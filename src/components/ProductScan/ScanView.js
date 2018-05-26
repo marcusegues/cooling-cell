@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { View, FlatList, Text, Animated } from 'react-native';
+import { View, FlatList, Text, Animated, StyleSheet } from 'react-native';
 import { BarCodeScanner, Permissions } from 'expo';
 import Touchable from 'react-native-platform-touchable';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
@@ -13,24 +13,36 @@ class ScanViewInner extends React.Component {
   };
 
   async handleStartScan() {
-    if (this.props.hasCameraPermission === null) {
+    const { hasCameraPermission } = this.props;
+    if (!hasCameraPermission) {
       const { status } = await Permissions.askAsync(Permissions.CAMERA);
       this.props
         .setHasCameraPermission(status === 'granted')
         .then(hasPermission => {
           if (hasPermission) {
-            Animated.timing(
-              // Animate over time
-              this.state.scanViewFlex, // The animated value to drive
-              {
-                toValue: 10, // Animate to opacity: 1 (opaque)
-                duration: 100, // Make it take a while
-              }
-            ).start();
+            this.startScan();
           }
         });
+    } else {
+      this.startScan();
     }
   }
+
+  startScan() {
+    this.setState({ scan: true });
+    Animated.timing(
+      // Animate over time
+      this.state.scanViewFlex, // The animated value to drive
+      {
+        toValue: 10, // Animate to opacity: 1 (opaque)
+        duration: 100, // Make it take a while
+      }
+    ).start();
+  }
+
+  _handleBarCodeRead = ({ type, data }) => {
+    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  };
 
   render() {
     const { bins } = this.props;
@@ -60,9 +72,16 @@ class ScanViewInner extends React.Component {
             justifyContent: 'center',
           }}
         >
-          <Touchable onPress={() => this.handleStartScan()}>
-            <Ionicons name="ios-qr-scanner" size={60} color="#757575" />
-          </Touchable>
+          {this.state.scan ? (
+            <BarCodeScanner
+              onBarCodeRead={this._handleBarCodeRead}
+              style={StyleSheet.absoluteFill}
+            />
+          ) : (
+            <Touchable onPress={() => this.handleStartScan()}>
+              <Ionicons name="ios-qr-scanner" size={60} color="#757575" />
+            </Touchable>
+          )}
         </Animated.View>
         <View style={{ flex: 2 }}>
           <FlatList
