@@ -26,12 +26,6 @@ class ProductRow extends React.Component {
     });
   }
 
-  handleOnLayout(event) {
-    const { x, y, width, height } = event.nativeEvent.layout;
-    console.log('OnLayout', this.props.order, x, y, width, height);
-    this.props.onLayout(this.props.order, height);
-  }
-
   render() {
     const {
       top,
@@ -39,13 +33,13 @@ class ProductRow extends React.Component {
       zIndex,
       borderTopColor = 'red',
       borderBottomColor = 'black',
+      name,
     } = this.props;
     return (
       <View
         ref={view => {
           this.viewComponent = view;
         }}
-        onLayout={event => this.handleOnLayout(event)}
         style={{
           position: 'absolute',
           top,
@@ -66,7 +60,7 @@ class ProductRow extends React.Component {
         >
           <View>
             <Text style={{ color: 'red' }}>Hello</Text>
-            <Text style={{ color: 'red' }}>You</Text>
+            <Text style={{ color: 'red' }}>{name}</Text>
             {expanded ? (
               <Button onPress={this.props.onUnselectRow} title={'Go Back'} />
             ) : null}

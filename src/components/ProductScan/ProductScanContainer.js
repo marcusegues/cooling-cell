@@ -19,9 +19,7 @@ class ProductScanContainerInner extends React.Component {
     super(props);
     this.state = {
       top: this.initialTop(),
-      expanded: this.props.expanded || 0,
       py: 0,
-      viewHeights: {},
       prepareForAnimation: 0,
       topBefore: new Animated.Value(0),
       topAfter: new Animated.Value(0),
@@ -37,12 +35,6 @@ class ProductScanContainerInner extends React.Component {
     return top;
   }
 
-  handleLayout(order, height) {
-    this.setState({
-      viewHeights: { ...this.state.viewHeights, [order]: height },
-    });
-  }
-
   numberProducts() {
     return this.props.allProducts.length;
   }
@@ -52,6 +44,10 @@ class ProductScanContainerInner extends React.Component {
     const { top, prepareForAnimation, topBefore } = this.state;
     const numberProducts = this.numberProducts();
     const order = prepareForAnimation;
+    if (prepareForAnimation === 0) {
+      return null;
+    }
+    console.log('Before products', allProducts.slice(0, order - 1));
     return (
       <Animated.View style={{ zIndex: 10, top: topBefore }}>
         {allProducts
@@ -59,15 +55,15 @@ class ProductScanContainerInner extends React.Component {
           .map((product, idx) => (
             <ProductRow
               key={product.name}
+              name={product.name}
               order={idx + 1}
-              expanded={this.state.expanded === idx + 1}
+              expanded={this.state.prepareForAnimation === idx + 1}
               top={top[idx + 1]}
               zIndex={numberProducts - idx}
               onSelectRow={(order, offsetToPage) =>
                 this.handleSelectRow(order, offsetToPage)
               }
               onUnselectRow={() => this.handleUnselectRow()}
-              onLayout={(order, height) => this.handleLayout(order, height)}
             />
           ))}
       </Animated.View>
@@ -78,12 +74,16 @@ class ProductScanContainerInner extends React.Component {
     const { allProducts } = this.props;
     const { prepareForAnimation, top, topAfter } = this.state;
     const numberProducts = this.numberProducts();
+    if (prepareForAnimation === 0) {
+      return null;
+    }
     return (
       <Animated.View style={{ zIndex: 5, top: topAfter }}>
         <ProductRow
-          key={allProducts[prepareForAnimation].name}
+          key={allProducts[prepareForAnimation - 1].name}
+          name={allProducts[prepareForAnimation - 1].name}
           order={prepareForAnimation}
-          expanded={this.state.expanded === prepareForAnimation}
+          expanded={this.state.prepareForAnimation === prepareForAnimation}
           top={top[prepareForAnimation]}
           zIndex={5 * (numberProducts - prepareForAnimation)}
           onSelectRow={(order, offsetToPage) => {
@@ -101,7 +101,7 @@ class ProductScanContainerInner extends React.Component {
     const { top, prepareForAnimation, topAfter } = this.state;
     const numberProducts = this.numberProducts();
     const order = prepareForAnimation;
-    console.log(this.state.top);
+    console.log('After products', allProducts.slice(order));
     return (
       <Animated.View style={{ zIndex: 3, top: topAfter }}>
         {allProducts.slice(order).map((product, idx) => {
@@ -109,8 +109,9 @@ class ProductScanContainerInner extends React.Component {
           return (
             <ProductRow
               key={product.name}
+              name={product.name}
               order={currentOrder}
-              expanded={this.state.expanded === currentOrder}
+              expanded={this.state.prepareForAnimation === currentOrder}
               top={top[currentOrder]}
               zIndex={numberProducts - currentOrder}
               onSelectRow={(order, offsetToPage) =>
@@ -147,37 +148,44 @@ class ProductScanContainerInner extends React.Component {
     });
   }
 
-  testBeforeAnimation() {
-    Animated.timing(
-      // Animate over time
-      this.state.topBefore, // The animated value to drive
-      {
-        toValue: -rowHeight,
-        duration: 1000, // Make it take a while
-      }
-    ).start();
-  }
-
-  testAfterAnimation() {
-    Animated.timing(
-      // Animate over time
-      this.state.topAfter, // The animated value to drive
-      {
-        toValue: rowHeight,
-        duration: 1000, // Make it take a while
-      }
-    ).start();
+  handleUnselectRow() {
+    return new Promise(resolve => {
+      let beforeAnimationDone = false;
+      let afterAnimationDone = false;
+      Animated.timing(
+        // Animate over time
+        this.state.topBefore, // The animated value to drive
+        {
+          toValue: 0, // Animate to opacity: 1 (opaque)
+          duration: 1000, // Make it take a while
+        }
+      ).start(() => {
+        beforeAnimationDone = true;
+        if (beforeAnimationDone && afterAnimationDone) {
+          resolve();
+        }
+      });
+      Animated.timing(
+        // Animate over time
+        this.state.topAfter, // The animated value to drive
+        {
+          toValue: 0, // Animate to opacity: 1 (opaque)
+          duration: 1000, // Make it take a while
+        }
+      ).start(() => {
+        afterAnimationDone = true;
+        if (beforeAnimationDone && afterAnimationDone) {
+          resolve();
+        }
+      });
+    }).then(() => {
+      console.log(this.state);
+      this.setState({ prepareForAnimation: 0 });
+    });
   }
 
   expandedOffset() {
     return this.state.expanded !== 0 ? height - rowHeight : 0;
-  }
-
-  handleScroll(event) {
-    console.log('Scroll', event.nativeEvent.contentOffset.y);
-    this.setState({
-      currentScroll: event.nativeEvent.contentOffset.y,
-    });
   }
 
   render() {
@@ -185,11 +193,11 @@ class ProductScanContainerInner extends React.Component {
     const { top, prepareForAnimation } = this.state;
     const numberProducts = this.numberProducts();
 
-    return prepareForAnimation !== 0 ? (
+    return (
       <View style={{ height }}>
         <ScrollView
           startScroll={startScroll || 0}
-          scrollEnabled={this.state.expanded === 0}
+          scrollEnabled={true}
           ref={scrollview => {
             this.scrollview = scrollview;
           }}
@@ -200,39 +208,7 @@ class ProductScanContainerInner extends React.Component {
 
           <View
             style={{
-              height: rowHeight * numberProducts + this.expandedOffset(),
-            }}
-          />
-        </ScrollView>
-      </View>
-    ) : (
-      <View style={{ height }}>
-        <ScrollView
-          startScroll={startScroll || 0}
-          scrollEnabled={this.state.expanded === 0}
-          ref={scrollview => {
-            this.scrollview = scrollview;
-          }}
-        >
-          {allProducts.map((product, idx) => (
-            <ProductRow
-              key={product.name}
-              order={idx + 1}
-              expanded={this.state.expanded === idx + 1}
-              top={top[idx + 1]}
-              zIndex={numberProducts - idx}
-              onSelectRow={(order, offsetToPage) =>
-                this.handleSelectRow(order, offsetToPage)
-              }
-              onUnselectRow={() => this.handleUnselectRow()}
-              onLayout={(order, height) => this.handleLayout(order, height)}
-              borderTopColor={'orange'}
-              borderBottomColor={'blue'}
-            />
-          ))}
-          <View
-            style={{
-              height: rowHeight * numberProducts + this.expandedOffset(),
+              height: rowHeight * numberProducts,
             }}
           />
         </ScrollView>
