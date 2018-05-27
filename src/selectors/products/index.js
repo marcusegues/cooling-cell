@@ -11,3 +11,6 @@ export const getBinTotalByProductAndBin = (state, productId, binId) =>
 
 export const getBinTotalScannedByProductAndBin = (state, productId, binId) =>
   byIdApi.getBinTotalScannedByProductAndBin(state.byId, productId, binId);
+
+export const getScannedIdsForProductAndBin = (state, productId, binId) =>
+  byIdApi.getScannedIdsForProductAndBin(state.byId, productId, binId);

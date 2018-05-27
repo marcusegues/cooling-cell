@@ -1,3 +1,4 @@
+// @flow
 export const saveScanData = (productId, binId, scanData) => (
   dispatch: Dispatch
 ) => {

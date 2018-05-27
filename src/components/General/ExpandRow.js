@@ -2,19 +2,25 @@ import React from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { blue500 } from '../../styles/colors';
+import Touchable from 'react-native-platform-touchable';
 
-export const ExpandRow = ({ expanded = false }) => (
-  <View
-    style={{
-      height: 30,
-      width: 30,
-      marginRight: 10,
-    }}
-  >
-    {expanded ? (
-      <MaterialCommunityIcons name="chevron-up" size={30} color={blue500} />
-    ) : (
-      <MaterialCommunityIcons name="chevron-down" size={30} color={blue500} />
-    )}
-  </View>
+const ChevronIcon = ({ expanded }) =>
+  expanded ? (
+    <MaterialCommunityIcons name="chevron-up" size={30} color={blue500} />
+  ) : (
+    <MaterialCommunityIcons name="chevron-down" size={30} color={blue500} />
+  );
+
+export const ExpandRow = ({ expanded = false, disabled, onPress }) => (
+  <Touchable onPress={onPress}>
+    <View
+      style={{
+        height: 30,
+        width: 30,
+        marginRight: 10,
+      }}
+    >
+      {disabled ? null : ChevronIcon(expanded)}
+    </View>
+  </Touchable>
 );

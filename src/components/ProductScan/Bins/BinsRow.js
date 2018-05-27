@@ -7,7 +7,7 @@ export const BinsRow = ({ children, onPress, disabled = false }) => (
     <View
       style={{
         width: '100%',
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-between',
         paddingVertical: 10,
         paddingLeft: 15,

@@ -1,4 +1,5 @@
 import * as productsApi from './products';
+import * as barCodesApi from './barCodes';
 
 export const getBinTotalForProduct = (state, productId) =>
   productsApi.getBinTotalForProduct(state.products, productId);
@@ -15,3 +16,12 @@ export const getBinTotalScannedByProductAndBin = (state, productId, binId) =>
     productId,
     binId
   );
+
+export const getScannedIdsForProductAndBin = (state, productId, binId) => {
+  const scannedIds = productsApi.getScannedIdsForProductAndBin(
+    state.products,
+    productId,
+    binId
+  );
+  return barCodesApi.getBarCodesById(state.barCodes, scannedIds);
+};

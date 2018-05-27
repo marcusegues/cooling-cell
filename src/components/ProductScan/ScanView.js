@@ -21,7 +21,7 @@ class ScanViewInner extends React.Component {
       scanViewFlex: new Animated.Value(0.5),
       selectedBinId: null,
     };
-    this.throttledHandleBarCodeRead = throttle(this.handleBarCodeRead, 2000);
+    this.throttledHandleBarCodeRead = throttle(this.handleBarCodeRead, 4000);
   }
 
   componentDidUpdate() {
@@ -90,6 +90,10 @@ class ScanViewInner extends React.Component {
   }
 
   handleBarCodeRead = ({ data, type }) => {
+    const sound = Expo.Asset.fromModule(
+      require('../../../assets/sounds/beep.mp3')
+    );
+    Expo.Audio.Sound.create(sound, { shouldPlay: true });
     const { productId } = this.props;
     const { selectedBinId } = this.state;
     console.log('barcode read');
