@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { View, Animated } from 'react-native';
 import throttle from 'lodash/throttle';
+import debounce from 'lodash/debounce';
 import { Permissions } from 'expo';
 import { Bins } from './Bins/Bins';
 
@@ -28,7 +29,8 @@ class ScanViewInner extends React.Component {
     };
     this.throttledHandleBarCodeRead = throttle(
       this.handleBarCodeRead.bind(this),
-      4000
+      2000,
+      { leading: true, trailing: false }
     );
   }
 
