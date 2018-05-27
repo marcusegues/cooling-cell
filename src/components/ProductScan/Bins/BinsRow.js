@@ -12,6 +12,7 @@ export const BinsRow = ({ children, onPress }) => (
         paddingVertical: 10,
         paddingLeft: 15,
         paddingRight: 15,
+        backgroundColor: 'orange',
       }}
     >
       {children}

@@ -3,12 +3,12 @@ import { View, FlatList } from 'react-native';
 import { AppText } from '../../General/Text/AppText';
 import { BinsRow } from './BinsRow';
 import { Square } from './Square';
-import { SelectionIcon } from './SelectionIcon';
 import { RadioButton } from '../../General/RadioButton/RadioButton';
 import { grey100 } from '../../../styles/colors';
 import { DisplayProgress } from '../../DisplayProgress/DisplayProgress';
+import { BinsRowFooter } from './BinsRowFooter';
 
-export const Bins = ({ bins, scan, selectedBinId, onSelectBin }) => {
+export const Bins = ({ bins, scan, selectedBinId, onSelectBin, onExpand }) => {
   const getTotal = binId => bins[binId].total;
   const getTotalScanned = binId => bins[binId].scanned;
   const flatListData = Object.keys(bins).map(binId => ({
@@ -26,18 +26,15 @@ export const Bins = ({ bins, scan, selectedBinId, onSelectBin }) => {
   return (
     <View style={{ flex: 1 }}>
       {scan ? (
-        <BinsRow>
-          <AppText>{`Scanning for bin ${selectedBinId}.`}</AppText>
+        <BinsRowFooter onPress={onExpand}>
+          <AppText>{`Scanning for bin ${selectedBinId}`}</AppText>
           <DisplayProgress
             total={getTotal(selectedBinId)}
             totalScanned={getTotalScanned(selectedBinId)}
           />
-        </BinsRow>
+        </BinsRowFooter>
       ) : (
         <View>
-          <BinsRow>
-            <AppText>{'Select bin'}</AppText>
-          </BinsRow>
           <FlatList
             style={{
               width: '100%',

@@ -16,6 +16,9 @@ class ScanViewInner extends React.Component {
   };
 
   async handleStartScan() {
+    if (this.state.selectedBinId === null) {
+      return;
+    }
     const { hasCameraPermission } = this.props;
     if (!hasCameraPermission) {
       const { status } = await Permissions.askAsync(Permissions.CAMERA);
@@ -38,6 +41,18 @@ class ScanViewInner extends React.Component {
       this.state.scanViewFlex, // The animated value to drive
       {
         toValue: 8, // Animate to opacity: 1 (opaque)
+        duration: 100, // Make it take a while
+      }
+    ).start();
+  }
+
+  endScan() {
+    this.setState({ scan: false });
+    Animated.timing(
+      // Animate over time
+      this.state.scanViewFlex, // The animated value to drive
+      {
+        toValue: 0.5, // Animate to opacity: 1 (opaque)
         duration: 100, // Make it take a while
       }
     ).start();
@@ -81,7 +96,11 @@ class ScanViewInner extends React.Component {
           ) : (
             <Touchable onPress={() => this.handleStartScan()}>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ color: '#757575' }}>
+                <Text
+                  style={{
+                    color: 'red',
+                  }}
+                >
                   {selectedBinId
                     ? 'Tap to start scanning'
                     : 'Please select a bin'}
@@ -96,6 +115,7 @@ class ScanViewInner extends React.Component {
           bins={bins}
           selectedBinId={selectedBinId}
           onSelectBin={selectedBinId => this.handleSelectBin(selectedBinId)}
+          onExpand={() => this.endScan()}
         />
       </View>
     );

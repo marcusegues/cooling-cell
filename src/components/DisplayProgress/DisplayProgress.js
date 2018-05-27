@@ -5,7 +5,10 @@ import { blue100 } from '../../styles/colors';
 import { SecondaryText } from '../General/Text/SecondaryText';
 
 export const DisplayProgress = ({ total, totalScanned }) => (
-  <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <SecondaryText style={{ marginRight: 5 }}>{`${totalScanned}/${
+      total
+    }`}</SecondaryText>
     <ProgressBar
       progress={totalScanned / total}
       width={100}
@@ -13,6 +16,5 @@ export const DisplayProgress = ({ total, totalScanned }) => (
       borderRadius={10}
       color={blue100}
     />
-    <SecondaryText>{`${totalScanned}/${total}`}</SecondaryText>
   </View>
 );
