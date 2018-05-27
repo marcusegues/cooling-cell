@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { blue500 } from '../../../styles/colors';
+import { blue500 } from '../../styles/colors';
 
 export const BinScanComplete = ({ selected = true }) => (
   <View

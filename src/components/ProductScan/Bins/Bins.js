@@ -11,7 +11,8 @@ import {
   getBinTotalByProductAndBin,
   getBinTotalScannedByProductAndBin,
 } from '../../../selectors';
-import { BinScanComplete } from './BinScanComplete';
+import { BinScanComplete } from '../../General/BinScanComplete';
+import { ExpandRow } from '../../General/ExpandRow';
 
 export const BinsInner = ({
   bins,
@@ -37,7 +38,10 @@ export const BinsInner = ({
           )}
           <AppText>{`Bin ${binId}`}</AppText>
         </View>
-        <AppText>{`${totalScanned(binId)}/${total(binId)}`}</AppText>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <AppText>{`${totalScanned(binId)}/${total(binId)}`}</AppText>
+          <ExpandRow />
+        </View>
       </BinsRow>
     ),
   }));

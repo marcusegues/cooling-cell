@@ -11,6 +11,7 @@ import {
   getBinTotalScannedByProductAndBin,
 } from '../../selectors';
 import { saveScanData } from '../../actions/barCodes';
+import { Scanner } from './Scanner';
 
 class ScanViewInner extends React.Component {
   constructor(props) {
@@ -26,9 +27,9 @@ class ScanViewInner extends React.Component {
   componentDidUpdate() {
     const { total, totalScanned } = this.props;
     const { selectedBinId } = this.state;
-    console.log(total(selectedBinId), totalScanned(selectedBinId));
     // If all products have been scanned for a bin, end the scan
     if (
+      selectedBinId &&
       totalScanned(selectedBinId) === total(selectedBinId) &&
       this.state.scan === true
     ) {
@@ -97,40 +98,16 @@ class ScanViewInner extends React.Component {
 
   render() {
     const { bins, productId } = this.props;
-    const { scan, selectedBinId } = this.state;
+    const { scan, selectedBinId, scanViewFlex } = this.state;
     return (
       <View style={{ flex: 1, width: '100%' }}>
-        <Animated.View
-          style={{
-            flex: this.state.scanViewFlex,
-            width: '100%',
-            backgroundColor: 'black',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {this.state.scan ? (
-            <BarCodeScanner
-              onBarCodeRead={this.throttledHandleBarCodeRead}
-              style={StyleSheet.absoluteFill}
-            />
-          ) : (
-            <Touchable onPress={() => this.handleStartScan()}>
-              <View style={{ alignItems: 'center' }}>
-                <Text
-                  style={{
-                    color: 'red',
-                  }}
-                >
-                  {selectedBinId
-                    ? 'Tap to start scanning'
-                    : 'Please select a bin'}
-                </Text>
-                <Ionicons name="ios-qr-scanner" size={60} color="#757575" />
-              </View>
-            </Touchable>
-          )}
-        </Animated.View>
+        <Scanner
+          scanViewFlex={scanViewFlex}
+          scan={scan}
+          onBarCodeRead={this.throttledHandleBarCodeRead}
+          onStartScan={() => this.handleStartScan()}
+          selectedBinId={selectedBinId}
+        />
         <Bins
           productId={productId}
           scan={scan}
