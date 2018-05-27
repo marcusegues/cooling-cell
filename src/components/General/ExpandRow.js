@@ -1,8 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
+import Touchable from 'react-native-platform-touchable';
+/* eslint-disable import/no-extraneous-dependencies */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { blue500 } from '../../styles/colors';
-import Touchable from 'react-native-platform-touchable';
 
 const ChevronIcon = ({ expanded }) =>
   expanded ? (

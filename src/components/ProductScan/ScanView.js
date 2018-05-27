@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { View, Animated } from 'react-native';
-import { Permissions } from 'expo';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Bins } from './Bins/Bins';
 import throttle from 'lodash/throttle';
+import { Permissions } from 'expo';
+import { Bins } from './Bins/Bins';
+
 import {
   getBinTotalByProductAndBin,
   getBinTotalScannedByProductAndBin,
@@ -75,13 +75,16 @@ class ScanViewInner extends React.Component {
   }
 
   handleBarCodeRead = ({ data, type }) => {
+    /* eslint-disable no-undef */
     const sound = Expo.Asset.fromModule(
+      /* eslint-disable global-require */
       require('../../../assets/sounds/beep.mp3')
     );
+    /* eslint-disable no-undef */
     Expo.Audio.Sound.create(sound, { shouldPlay: true });
+
     const { productId } = this.props;
     const { selectedBinId } = this.state;
-    console.log('barcode read');
     const allScanned = this.props.saveScan(productId, selectedBinId, {
       data,
       type,

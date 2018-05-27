@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Animated, View, Text } from 'react-native';
 import { BarCodeScanner } from 'expo';
 import Touchable from 'react-native-platform-touchable';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+/* eslint-disable import/no-extraneous-dependencies */
+import { Ionicons } from '@expo/vector-icons';
 
 export const Scanner = ({
   scanViewFlex,

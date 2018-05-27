@@ -1,15 +1,10 @@
 import React from 'react';
-import { View, Text, Dimensions } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import Touchable from 'react-native-platform-touchable';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import ProgressBar from 'react-native-progress/Bar';
 import { AppText } from '../General/Text/AppText';
-import { SecondaryText } from '../General/Text/SecondaryText';
-import { blue100 } from '../../styles/colors';
 import { DisplayProgress } from '../DisplayProgress/DisplayProgress';
 
-const height = Dimensions.get('window').height;
-const width = Dimensions.get('window').width;
+const { height } = Dimensions.get('window');
 
 const rowHeight = height / 8;
 

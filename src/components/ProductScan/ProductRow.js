@@ -1,18 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  Dimensions,
-  View,
-  Text,
-  TouchableHighlight,
-  TouchableWithoutFeedback,
-  Button,
-  Animated,
-  StyleSheet,
-} from 'react-native';
-import { BarCodeScanner, Permissions } from 'expo';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-
+import { Dimensions, View } from 'react-native';
 import { ScanView } from './ScanView';
 import { ProductRowFooter } from './ProductRowFooter';
 import {
@@ -20,21 +8,15 @@ import {
   getBinTotalScannedForProduct,
 } from '../../selectors';
 
-const height = Dimensions.get('window').height;
-const width = Dimensions.get('window').width;
-
-const rowHeight = height / 8;
+const { height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 class ProductRowInner extends React.Component {
   handlePress() {
-    this.viewComponent.measure((fx, fy, width, height, px, py) => {
+    this.viewComponent.measure((fx, fy, w, h, px, py) => {
       this.props.onSelectRow(this.props.order, py);
     });
   }
-
-  _handleBarCodeRead = ({ type, data }) => {
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-  };
 
   render() {
     const {

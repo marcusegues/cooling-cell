@@ -1,17 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  FlatList,
-  ScrollView,
-  Text,
-  Dimensions,
-  View,
-  Animated,
-  Button,
-} from 'react-native';
+import { ScrollView, Dimensions, View, Animated } from 'react-native';
 import { ProductRow } from './ProductRow';
 
-const height = Dimensions.get('window').height;
+const { height } = Dimensions.get('window');
 const rowHeight = height / 8;
 
 class ProductScanContainerInner extends React.Component {
@@ -19,9 +11,7 @@ class ProductScanContainerInner extends React.Component {
     super(props);
     this.state = {
       top: this.initialTop(),
-      py: 0,
       prepareForExpand: 0,
-      expandFinished: false,
       topBefore: new Animated.Value(0),
       topAfter: new Animated.Value(0),
     };
@@ -44,21 +34,19 @@ class ProductScanContainerInner extends React.Component {
     const { allProducts } = this.props;
     const { top, prepareForExpand, topBefore } = this.state;
     const numberProducts = this.numberProducts();
-    const order = prepareForExpand;
     if (prepareForExpand === 0) {
       return null;
     }
-    console.log('Before products', allProducts.slice(0, order - 1));
     return (
       <Animated.View style={{ zIndex: 10, top: topBefore }}>
         {allProducts
-          .slice(0, order - 1)
+          .slice(0, prepareForExpand - 1)
           .map((productId, idx) => (
             <ProductRow
               key={productId}
               productId={productId}
               order={idx + 1}
-              expanded={this.state.prepareForExpand === idx + 1}
+              expanded={prepareForExpand === idx + 1}
               top={top[idx + 1]}
               zIndex={numberProducts - idx}
               onSelectRow={(order, offsetToPage) =>
@@ -91,7 +79,6 @@ class ProductScanContainerInner extends React.Component {
             this.handleSelectRow(order, offsetToPage);
           }}
           onUnselectRow={() => this.handleUnselectRow()}
-          onLayout={(order, height) => this.handleLayout(order, height)}
         />
       </Animated.View>
     );
@@ -101,12 +88,10 @@ class ProductScanContainerInner extends React.Component {
     const { allProducts } = this.props;
     const { top, prepareForExpand, topAfter } = this.state;
     const numberProducts = this.numberProducts();
-    const order = prepareForExpand;
-    console.log('After products', allProducts.slice(order));
     return (
       <Animated.View style={{ zIndex: 3, top: topAfter }}>
-        {allProducts.slice(order).map((productId, idx) => {
-          const currentOrder = order + idx + 1;
+        {allProducts.slice(prepareForExpand).map((productId, idx) => {
+          const currentOrder = prepareForExpand + idx + 1;
           return (
             <ProductRow
               key={productId}
@@ -119,7 +104,6 @@ class ProductScanContainerInner extends React.Component {
                 this.handleSelectRow(order, offsetToPage)
               }
               onUnselectRow={() => this.handleUnselectRow()}
-              onLayout={(order, height) => this.handleLayout(order, height)}
             />
           );
         })}
@@ -128,7 +112,6 @@ class ProductScanContainerInner extends React.Component {
   }
 
   handleSelectRow(order, py) {
-    const { prepareForExpand } = this.state;
     this.setState({ prepareForExpand: order }, () => {
       Animated.parallel([
         Animated.timing(
@@ -172,13 +155,8 @@ class ProductScanContainerInner extends React.Component {
     ]).start(() => this.setState({ prepareForExpand: 0 }));
   }
 
-  expandedOffset() {
-    return this.state.expanded !== 0 ? height - rowHeight : 0;
-  }
-
   render() {
-    const { allProducts, startScroll } = this.props;
-    const { top, prepareForExpand } = this.state;
+    const { startScroll } = this.props;
     const numberProducts = this.numberProducts();
 
     return (
@@ -186,9 +164,6 @@ class ProductScanContainerInner extends React.Component {
         <ScrollView
           startScroll={startScroll || 0}
           scrollEnabled={this.state.prepareForExpand === 0}
-          ref={scrollview => {
-            this.scrollview = scrollview;
-          }}
         >
           {this.buildBeforeView()}
           {this.selectedView()}
