@@ -10,6 +10,7 @@ import {
   getBinTotalByProductAndBin,
   getBinTotalScannedByProductAndBin,
 } from '../../selectors';
+import { saveScanData } from '../../actions/barCodes';
 
 class ScanViewInner extends React.Component {
   constructor(props) {
@@ -87,12 +88,11 @@ class ScanViewInner extends React.Component {
     }
   }
 
-  handleBarCodeRead = ({ type, data }) => {
-    const { productId, total, totalScanned } = this.props;
+  handleBarCodeRead = ({ data, type }) => {
+    const { productId } = this.props;
     const { selectedBinId } = this.state;
-    const state = this.state;
     console.log('barcode read');
-    this.props.saveScanToBin(productId, selectedBinId, data);
+    this.props.saveScan(productId, selectedBinId, { data, type });
   };
 
   render() {
@@ -159,12 +159,8 @@ const mapDispatchToProps = dispatch => ({
       resolve(hasPermission);
     });
   },
-  saveScanToBin: (productId, binId, data) => {
-    return new Promise(resolve => {
-      dispatch({ type: 'SAVE_SCAN_TO_BIN', productId, binId, data });
-      resolve();
-    });
-  },
+  saveScan: (productId, binId, scanData) =>
+    dispatch(saveScanData(productId, binId, scanData)),
 });
 
 export const ScanView = connect(mapStateToProps, mapDispatchToProps)(

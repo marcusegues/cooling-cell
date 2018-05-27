@@ -6,6 +6,15 @@ export const byId = (
   action: Action
 ): BarCodesByIdState => {
   switch (action.type) {
+    case 'SAVE_SCAN_DATA': {
+      return {
+        ...state,
+        [action.scanData.data]: {
+          data: action.scanData.data,
+          type: action.scanData.type,
+        },
+      };
+    }
     default: {
       return state;
     }

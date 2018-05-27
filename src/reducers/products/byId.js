@@ -12,7 +12,7 @@ export const byIdBins = (state, action) => {
         ...state,
         [action.binId]: {
           ...state[action.binId],
-          scanned: [...state[action.binId].scanned, action.data],
+          scanned: [...state[action.binId].scanned, action.scanId],
         },
       };
     }

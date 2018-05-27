@@ -182,7 +182,7 @@ class ProductScanContainerInner extends React.Component {
     const numberProducts = this.numberProducts();
 
     return (
-      <View style={{ height }}>
+      <View style={{ height, backgroundColor: 'white' }}>
         <ScrollView
           startScroll={startScroll || 0}
           scrollEnabled={this.state.prepareForExpand === 0}
