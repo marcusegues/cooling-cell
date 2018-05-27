@@ -67,8 +67,11 @@ class ScanViewInner extends React.Component {
   }
 
   _handleBarCodeRead = ({ type, data }) => {
+    const { productId } = this.props;
+    const { selectedBinId } = this.state;
     console.log('barcode read');
     this.setState({ successfulScan: true });
+    this.props.saveScanToBin(productId, selectedBinId, data);
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
 
@@ -134,6 +137,8 @@ const mapDispatchToProps = dispatch => ({
       resolve(hasPermission);
     });
   },
+  saveScanToBin: (productId, binId, data) =>
+    dispatch({ type: 'SAVE_SCAN_TO_BIN', productId, binId, data }),
 });
 
 export const ScanView = connect(mapStateToProps, mapDispatchToProps)(

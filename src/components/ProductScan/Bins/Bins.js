@@ -2,7 +2,6 @@ import React from 'react';
 import { View, FlatList } from 'react-native';
 import { AppText } from '../../General/Text/AppText';
 import { BinsRow } from './BinsRow';
-import { Square } from './Square';
 import { RadioButton } from '../../General/RadioButton/RadioButton';
 import { grey100 } from '../../../styles/colors';
 import { DisplayProgress } from '../../DisplayProgress/DisplayProgress';
@@ -10,7 +9,8 @@ import { BinsRowFooter } from './BinsRowFooter';
 
 export const Bins = ({ bins, scan, selectedBinId, onSelectBin, onExpand }) => {
   const getTotal = binId => bins[binId].total;
-  const getTotalScanned = binId => bins[binId].scanned;
+  const getTotalScanned = binId => bins[binId].scanned.length;
+
   const flatListData = Object.keys(bins).map(binId => ({
     key: binId,
     component: (

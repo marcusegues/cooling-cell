@@ -1,6 +1,6 @@
 // @flow
 import { combineReducers } from 'redux';
-import { products } from './products';
+import { products } from './products/index';
 import { permissions } from './permissions';
 import type { AppState } from '../types/reducers';
 
