@@ -12,6 +12,11 @@ import {
 import { saveScanData } from '../../actions/barCodes';
 import { Scanner } from './Scanner';
 
+const loadedSound = Expo.Asset.fromModule(
+  /* eslint-disable global-require */
+  require('../../../assets/sounds/beep.mp3')
+);
+
 class ScanViewInner extends React.Component {
   constructor(props) {
     super(props);
@@ -19,8 +24,17 @@ class ScanViewInner extends React.Component {
       scan: false,
       scanViewFlex: new Animated.Value(0.5),
       selectedBinId: null,
+      justScanned: false,
     };
-    this.throttledHandleBarCodeRead = throttle(this.handleBarCodeRead, 4000);
+    this.throttledHandleBarCodeRead = throttle(
+      this.handleBarCodeRead.bind(this),
+      4000
+    );
+  }
+
+  async componentDidMount() {
+    const { sound } = await Expo.Audio.Sound.create(loadedSound);
+    this.sound = sound;
   }
 
   async handleStartScan() {
@@ -74,26 +88,24 @@ class ScanViewInner extends React.Component {
     }
   }
 
-  handleBarCodeRead = ({ data, type }) => {
-    /* eslint-disable no-undef */
-    const sound = Expo.Asset.fromModule(
-      /* eslint-disable global-require */
-      require('../../../assets/sounds/beep.mp3')
-    );
-    /* eslint-disable no-undef */
-    Expo.Audio.Sound.create(sound, { shouldPlay: true });
-
-    const { productId } = this.props;
-    const { selectedBinId } = this.state;
-    const allScanned = this.props.saveScan(productId, selectedBinId, {
-      data,
-      type,
-    });
-    if (allScanned) {
-      this.endScan();
-      this.setState({ selectedBinId: 0 });
+  async handleBarCodeRead({ data, type }) {
+    try {
+      await this.sound.setPositionAsync(0);
+      await this.sound.playAsync();
+      const { productId } = this.props;
+      const { selectedBinId } = this.state;
+      const allScanned = this.props.saveScan(productId, selectedBinId, {
+        data,
+        type,
+      });
+      if (allScanned) {
+        this.endScan();
+        this.setState({ selectedBinId: 0 });
+      }
+    } catch (error) {
+      // An error occurred!
     }
-  };
+  }
 
   render() {
     const { bins, productId } = this.props;

@@ -43,7 +43,7 @@
     "test:coverage:watch": "jest --watchAll --coverage",
     "flow": "flow",
     "flow:coverage": "flow-coverage-report -i 'src/**/*.js' -x 'src/**/__tests__/**' -t html -t json -t text --threshold 90",
-    "setdebugger": "REACT_DEBUGGER=\"unset ELECTRON_RUN_AS_NODE && open -g 'rndebugger://set-debugger-loc?port=19001'\""
+    "setdebugger": "REACT_DEBUGGER=\"unset ELECTRON_RUN_AS_NODE && open -g 'rndebugger://set-debugger-loc?port=19001'\" && open \"rndebugger://set-debugger-loc?host=localhost&port=19001\""
   },
   "jest": {
     "preset": "jest-expo"
