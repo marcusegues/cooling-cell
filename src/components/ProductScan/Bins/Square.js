@@ -6,7 +6,7 @@ export const Square = () => (
     style={{
       height: 30,
       width: 30,
-      backgroundColor: '#FFD54F',
+      backgroundColor: '#90CAF9',
       marginRight: 10,
     }}
   />

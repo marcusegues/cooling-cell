@@ -39,9 +39,9 @@ export const getInitialProductsState = (): ProductsState => ({
     '2': {
       name: 'Beef Curry',
       bins: {
-        '0': { total: 2, scanned: 0 },
+        '0': { total: 5, scanned: 3 },
         '1': { total: 4, scanned: 0 },
-        '2': { total: 5, scanned: 0 },
+        '2': { total: 5, scanned: 2 },
       },
     },
     '3': {
@@ -55,32 +55,32 @@ export const getInitialProductsState = (): ProductsState => ({
     '4': {
       name: 'Chocolate Cake',
       bins: {
-        '0': { total: 2, scanned: 0 },
+        '0': { total: 2, scanned: 1 },
         '1': { total: 4, scanned: 0 },
-        '2': { total: 5, scanned: 0 },
+        '2': { total: 5, scanned: 5 },
       },
     },
     '5': {
       name: 'Cheesecake',
       bins: {
         '0': { total: 2, scanned: 0 },
-        '1': { total: 4, scanned: 0 },
+        '1': { total: 4, scanned: 2 },
         '2': { total: 5, scanned: 0 },
       },
     },
     '6': {
       name: 'Quinoa Lentil Soup',
       bins: {
-        '0': { total: 2, scanned: 0 },
+        '0': { total: 2, scanned: 1 },
         '1': { total: 4, scanned: 0 },
-        '2': { total: 5, scanned: 0 },
+        '2': { total: 5, scanned: 3 },
       },
     },
     '7': {
       name: 'Caeser Salad',
       bins: {
-        '0': { total: 2, scanned: 0 },
-        '1': { total: 4, scanned: 0 },
+        '0': { total: 2, scanned: 2 },
+        '1': { total: 4, scanned: 4 },
         '2': { total: 5, scanned: 0 },
       },
     },

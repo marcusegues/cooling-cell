@@ -2,7 +2,11 @@ import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import Touchable from 'react-native-platform-touchable';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { AppText } from '../General/AppText';
+import ProgressBar from 'react-native-progress/Bar';
+import { AppText } from '../General/Text/AppText';
+import { SecondaryText } from '../General/Text/SecondaryText';
+import { blue100 } from '../../styles/colors';
+import { DisplayProgress } from '../DisplayProgress/DisplayProgress';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -14,10 +18,12 @@ export const ProductRowFooter = ({
   handlePress,
   onUnselectRow,
   name,
+  total,
+  totalScanned,
 }) => (
   <Touchable
     style={{ height: rowHeight, width: '100%' }}
-    onPress={expanded ? () => {} : () => handlePress()}
+    onPress={expanded ? () => onUnselectRow() : () => handlePress()}
   >
     <View
       style={{
@@ -30,13 +36,7 @@ export const ProductRowFooter = ({
       }}
     >
       <AppText>{name}</AppText>
-      <View style={{ height: 40, alignItems: 'center' }}>
-        {expanded ? (
-          <Touchable onPress={onUnselectRow}>
-            <MaterialIcons name="view-list" size={20} color="#757575" />
-          </Touchable>
-        ) : null}
-      </View>
+      <DisplayProgress total={total} totalScanned={totalScanned} />
     </View>
   </Touchable>
 );

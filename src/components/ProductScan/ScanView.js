@@ -4,7 +4,7 @@ import { View, FlatList, Text, Animated, StyleSheet } from 'react-native';
 import { BarCodeScanner, Permissions } from 'expo';
 import Touchable from 'react-native-platform-touchable';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { AppText } from '../General/AppText';
+import { AppText } from '../General/Text/AppText';
 import { Bins } from './Bins/Bins';
 
 class ScanViewInner extends React.Component {
@@ -12,6 +12,7 @@ class ScanViewInner extends React.Component {
     scan: false,
     successfulScan: false,
     scanViewFlex: new Animated.Value(0.5),
+    selectedBinId: null,
   };
 
   async handleStartScan() {
@@ -36,10 +37,18 @@ class ScanViewInner extends React.Component {
       // Animate over time
       this.state.scanViewFlex, // The animated value to drive
       {
-        toValue: 5, // Animate to opacity: 1 (opaque)
+        toValue: 8, // Animate to opacity: 1 (opaque)
         duration: 100, // Make it take a while
       }
     ).start();
+  }
+
+  handleSelectBin(selectedBinId) {
+    if (selectedBinId === this.state.selectedBinId) {
+      this.setState({ selectedBinId: null });
+    } else {
+      this.setState({ selectedBinId });
+    }
   }
 
   _handleBarCodeRead = ({ type, data }) => {
@@ -50,6 +59,7 @@ class ScanViewInner extends React.Component {
 
   render() {
     const { bins } = this.props;
+    const { scan, selectedBinId } = this.state;
     return (
       <View style={{ flex: 1, width: '100%' }}>
         <Animated.View
@@ -70,11 +80,23 @@ class ScanViewInner extends React.Component {
             />
           ) : (
             <Touchable onPress={() => this.handleStartScan()}>
-              <Ionicons name="ios-qr-scanner" size={60} color="#757575" />
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ color: '#757575' }}>
+                  {selectedBinId
+                    ? 'Tap to start scanning'
+                    : 'Please select a bin'}
+                </Text>
+                <Ionicons name="ios-qr-scanner" size={60} color="#757575" />
+              </View>
             </Touchable>
           )}
         </Animated.View>
-        <Bins bins={bins} />
+        <Bins
+          scan={scan}
+          bins={bins}
+          selectedBinId={selectedBinId}
+          onSelectBin={selectedBinId => this.handleSelectBin(selectedBinId)}
+        />
       </View>
     );
   }

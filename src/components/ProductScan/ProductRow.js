@@ -15,6 +15,10 @@ import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 
 import { ScanView } from './ScanView';
 import { ProductRowFooter } from './ProductRowFooter';
+import {
+  getBinTotalForProduct,
+  getBinTotalScannedForProduct,
+} from '../../selectors';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -33,8 +37,16 @@ class ProductRowInner extends React.Component {
   };
 
   render() {
-    const { top, expanded, zIndex, product, productId } = this.props;
-    const { name, bins } = product;
+    const {
+      top,
+      expanded,
+      zIndex,
+      product,
+      productId,
+      total,
+      totalScanned,
+    } = this.props;
+    const { name } = product;
     return (
       <View
         ref={view => {
@@ -60,6 +72,8 @@ class ProductRowInner extends React.Component {
           handlePress={() => this.handlePress()}
           onUnselectRow={() => this.props.onUnselectRow()}
           name={name}
+          total={total}
+          totalScanned={totalScanned}
         />
       </View>
     );
@@ -68,6 +82,8 @@ class ProductRowInner extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
   product: state.products.byId[ownProps.productId],
+  total: getBinTotalForProduct(state, ownProps.productId),
+  totalScanned: getBinTotalScannedForProduct(state, ownProps.productId),
 });
 
 export const ProductRow = connect(mapStateToProps, null)(ProductRowInner);
