@@ -4,8 +4,8 @@ import { Text } from 'react-native';
 export const AppText = ({ children }) => (
   <Text
     style={{
-      fontFamily: 'open-sans-semi-bold',
-      color: 'red',
+      fontFamily: 'open-sans-regular',
+      color: '#212121',
       fontSize: 20,
     }}
   >

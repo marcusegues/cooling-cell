@@ -33,15 +33,7 @@ class ProductRowInner extends React.Component {
   };
 
   render() {
-    const {
-      top,
-      expanded,
-      zIndex,
-      borderTopColor = 'white',
-      borderBottomColor = 'black',
-      product,
-      productId,
-    } = this.props;
+    const { top, expanded, zIndex, product, productId } = this.props;
     const { name, bins } = product;
     return (
       <View
@@ -58,9 +50,8 @@ class ProductRowInner extends React.Component {
           alignItems: 'center',
           justifyContent: 'flex-end',
           backgroundColor: 'white',
-          borderWidth: 3,
-          borderTopColor,
-          borderBottomColor,
+          borderWidth: 0.5,
+          borderBottomColor: '#F5F5F5',
         }}
       >
         {expanded ? <ScanView productId={productId} /> : null}

@@ -13,6 +13,7 @@ export default class App extends React.Component {
 
   async componentDidMount() {
     await Font.loadAsync({
+      'open-sans-regular': require('./assets/fonts/openSans/OpenSans-Regular.ttf'),
       'open-sans-light': require('./assets/fonts/openSans/OpenSans-Light.ttf'),
       'open-sans-semi-bold': require('./assets/fonts/openSans/OpenSans-SemiBold.ttf'),
     });

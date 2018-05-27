@@ -26,6 +26,7 @@ export const ProductRowFooter = ({
         alignItems: 'center',
         height: '100%',
         justifyContent: 'space-between',
+        paddingHorizontal: 15,
       }}
     >
       <AppText>{name}</AppText>

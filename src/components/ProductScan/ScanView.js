@@ -5,7 +5,7 @@ import { BarCodeScanner, Permissions } from 'expo';
 import Touchable from 'react-native-platform-touchable';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { AppText } from '../General/AppText';
-import { Bins } from './Bins';
+import { Bins } from './Bins/Bins';
 
 class ScanViewInner extends React.Component {
   state = {
@@ -50,21 +50,6 @@ class ScanViewInner extends React.Component {
 
   render() {
     const { bins } = this.props;
-    const flatListData = Object.keys(bins).map(binId => ({
-      key: binId,
-      component: (
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}
-        >
-          <AppText>{binId}</AppText>
-          <AppText>{`${bins[binId].scanned}/${bins[binId].total}`}</AppText>
-        </View>
-      ),
-    }));
     return (
       <View style={{ flex: 1, width: '100%' }}>
         <Animated.View
