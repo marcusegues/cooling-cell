@@ -5,8 +5,8 @@ import { grey400, blue500 } from '../../../styles/colors';
 export const RadioButton = ({ selected }) => (
   <View
     style={{
-      height: 20,
-      width: 20,
+      height: 30,
+      width: 30,
       borderRadius: 15,
       borderWidth: 1,
       borderColor: selected ? blue500 : grey400,

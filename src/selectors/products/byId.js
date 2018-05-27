@@ -9,3 +9,9 @@ export const getBinTotalScannedForProduct = (state, productId) =>
     (acc, bin) => (acc += bin.scanned.length),
     0
   );
+
+export const getBinTotalByProductAndBin = (state, productId, binId) =>
+  state[productId].bins[binId].total;
+
+export const getBinTotalScannedByProductAndBin = (state, productId, binId) =>
+  state[productId].bins[binId].scanned.length;

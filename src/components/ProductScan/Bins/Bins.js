@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { View, FlatList } from 'react-native';
 import { AppText } from '../../General/Text/AppText';
 import { BinsRow } from './BinsRow';
@@ -6,20 +7,37 @@ import { RadioButton } from '../../General/RadioButton/RadioButton';
 import { grey100 } from '../../../styles/colors';
 import { DisplayProgress } from '../../DisplayProgress/DisplayProgress';
 import { BinsRowFooter } from './BinsRowFooter';
+import {
+  getBinTotalByProductAndBin,
+  getBinTotalScannedByProductAndBin,
+} from '../../../selectors';
+import { BinScanComplete } from './BinScanComplete';
 
-export const Bins = ({ bins, scan, selectedBinId, onSelectBin, onExpand }) => {
-  const getTotal = binId => bins[binId].total;
-  const getTotalScanned = binId => bins[binId].scanned.length;
-
+export const BinsInner = ({
+  bins,
+  scan,
+  selectedBinId,
+  onSelectBin,
+  onExpand,
+  total,
+  totalScanned,
+}) => {
   const flatListData = Object.keys(bins).map(binId => ({
     key: binId,
     component: (
-      <BinsRow onPress={() => onSelectBin(binId)}>
+      <BinsRow
+        disabled={totalScanned(binId) === total(binId)}
+        onPress={() => onSelectBin(binId)}
+      >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <RadioButton selected={binId === selectedBinId} />
+          {totalScanned(binId) === total(binId) ? (
+            <BinScanComplete />
+          ) : (
+            <RadioButton selected={binId === selectedBinId} />
+          )}
           <AppText>{`Bin ${binId}`}</AppText>
         </View>
-        <AppText>{`${getTotalScanned(binId)}/${getTotal(binId)}`}</AppText>
+        <AppText>{`${totalScanned(binId)}/${total(binId)}`}</AppText>
       </BinsRow>
     ),
   }));
@@ -29,8 +47,8 @@ export const Bins = ({ bins, scan, selectedBinId, onSelectBin, onExpand }) => {
         <BinsRowFooter onPress={onExpand}>
           <AppText>{`Scanning for bin ${selectedBinId}`}</AppText>
           <DisplayProgress
-            total={getTotal(selectedBinId)}
-            totalScanned={getTotalScanned(selectedBinId)}
+            total={total(selectedBinId)}
+            totalScanned={totalScanned(selectedBinId)}
           />
         </BinsRowFooter>
       ) : (
@@ -50,3 +68,11 @@ export const Bins = ({ bins, scan, selectedBinId, onSelectBin, onExpand }) => {
     </View>
   );
 };
+
+const mapStateToProps = (state, ownProps) => ({
+  total: binId => getBinTotalByProductAndBin(state, ownProps.productId, binId),
+  totalScanned: binId =>
+    getBinTotalScannedByProductAndBin(state, ownProps.productId, binId),
+});
+
+export const Bins = connect(mapStateToProps, null)(BinsInner);

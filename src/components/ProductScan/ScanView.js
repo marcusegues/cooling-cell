@@ -4,16 +4,37 @@ import { View, FlatList, Text, Animated, StyleSheet } from 'react-native';
 import { BarCodeScanner, Permissions } from 'expo';
 import Touchable from 'react-native-platform-touchable';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { AppText } from '../General/Text/AppText';
 import { Bins } from './Bins/Bins';
+import throttle from 'lodash/throttle';
+import {
+  getBinTotalByProductAndBin,
+  getBinTotalScannedByProductAndBin,
+} from '../../selectors';
 
 class ScanViewInner extends React.Component {
-  state = {
-    scan: false,
-    successfulScan: false,
-    scanViewFlex: new Animated.Value(0.5),
-    selectedBinId: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      scan: false,
+      scanViewFlex: new Animated.Value(0.5),
+      selectedBinId: null,
+    };
+    this.throttledHandleBarCodeRead = throttle(this.handleBarCodeRead, 2000);
+  }
+
+  componentDidUpdate() {
+    const { total, totalScanned } = this.props;
+    const { selectedBinId } = this.state;
+    console.log(total(selectedBinId), totalScanned(selectedBinId));
+    // If all products have been scanned for a bin, end the scan
+    if (
+      totalScanned(selectedBinId) === total(selectedBinId) &&
+      this.state.scan === true
+    ) {
+      this.endScan();
+      this.setState({ selectedBinId: 0 });
+    }
+  }
 
   async handleStartScan() {
     if (this.state.selectedBinId === null) {
@@ -40,7 +61,7 @@ class ScanViewInner extends React.Component {
       // Animate over time
       this.state.scanViewFlex, // The animated value to drive
       {
-        toValue: 8, // Animate to opacity: 1 (opaque)
+        toValue: 8,
         duration: 100, // Make it take a while
       }
     ).start();
@@ -52,7 +73,7 @@ class ScanViewInner extends React.Component {
       // Animate over time
       this.state.scanViewFlex, // The animated value to drive
       {
-        toValue: 0.5, // Animate to opacity: 1 (opaque)
+        toValue: 0.5,
         duration: 100, // Make it take a while
       }
     ).start();
@@ -66,17 +87,16 @@ class ScanViewInner extends React.Component {
     }
   }
 
-  _handleBarCodeRead = ({ type, data }) => {
-    const { productId } = this.props;
+  handleBarCodeRead = ({ type, data }) => {
+    const { productId, total, totalScanned } = this.props;
     const { selectedBinId } = this.state;
+    const state = this.state;
     console.log('barcode read');
-    this.setState({ successfulScan: true });
     this.props.saveScanToBin(productId, selectedBinId, data);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
 
   render() {
-    const { bins } = this.props;
+    const { bins, productId } = this.props;
     const { scan, selectedBinId } = this.state;
     return (
       <View style={{ flex: 1, width: '100%' }}>
@@ -91,9 +111,7 @@ class ScanViewInner extends React.Component {
         >
           {this.state.scan ? (
             <BarCodeScanner
-              onBarCodeRead={
-                this.state.successfulScan ? undefined : this._handleBarCodeRead
-              }
+              onBarCodeRead={this.throttledHandleBarCodeRead}
               style={StyleSheet.absoluteFill}
             />
           ) : (
@@ -114,6 +132,7 @@ class ScanViewInner extends React.Component {
           )}
         </Animated.View>
         <Bins
+          productId={productId}
           scan={scan}
           bins={bins}
           selectedBinId={selectedBinId}
@@ -128,6 +147,9 @@ class ScanViewInner extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   bins: state.products.byId[ownProps.productId].bins,
   hasCameraPermission: state.permissions.hasCameraPermission,
+  total: binId => getBinTotalByProductAndBin(state, ownProps.productId, binId),
+  totalScanned: binId =>
+    getBinTotalScannedByProductAndBin(state, ownProps.productId, binId),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -137,8 +159,12 @@ const mapDispatchToProps = dispatch => ({
       resolve(hasPermission);
     });
   },
-  saveScanToBin: (productId, binId, data) =>
-    dispatch({ type: 'SAVE_SCAN_TO_BIN', productId, binId, data }),
+  saveScanToBin: (productId, binId, data) => {
+    return new Promise(resolve => {
+      dispatch({ type: 'SAVE_SCAN_TO_BIN', productId, binId, data });
+      resolve();
+    });
+  },
 });
 
 export const ScanView = connect(mapStateToProps, mapDispatchToProps)(
