@@ -1,8 +1,6 @@
-import {
-  getInitialProductsState,
-  ProductsState,
-} from '../../types/reducers/products';
+// @flow
 import { combineReducers } from 'redux';
+import type { ProductsState } from '../../types/reducers/products';
 import { byId } from './byId';
 import { allIds } from './allIds';
 

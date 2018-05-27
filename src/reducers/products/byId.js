@@ -1,11 +1,13 @@
-import {
-  getInitialProductsByIdState,
-  getInitialProductsState,
+// @flow
+import { getInitialProductsByIdState } from '../../types/reducers/products';
+import type {
+  Bins,
+  Product,
+  ProductsByIdState,
 } from '../../types/reducers/products';
-import type { ProductsByIdState } from '../../types/reducers/products';
 import type { Action } from '../../types/actions';
 
-export const byIdBins = (state, action) => {
+export const byIdBins = (state: Bins, action: Action): Bins => {
   switch (action.type) {
     case 'SAVE_SCAN_TO_BIN': {
       return {
@@ -16,10 +18,13 @@ export const byIdBins = (state, action) => {
         },
       };
     }
+    default: {
+      return state;
+    }
   }
 };
 
-export const byIdProduct = (state, action) => {
+export const byIdProduct = (state: Product, action: Action): Product => {
   switch (action.type) {
     case 'SAVE_SCAN_TO_BIN': {
       return { ...state, bins: byIdBins(state.bins, action) };

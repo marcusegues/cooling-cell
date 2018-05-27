@@ -1,5 +1,7 @@
+// @flow
 import type { Action } from '../../types/actions';
 import { getInitialBarCodesByIdState } from '../../types/reducers/barcodes';
+import type { BarCodesByIdState } from '../../types/reducers/barcodes';
 
 export const byId = (
   state: BarCodesByIdState = getInitialBarCodesByIdState(),

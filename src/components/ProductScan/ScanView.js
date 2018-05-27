@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { View, FlatList, Text, Animated, StyleSheet } from 'react-native';
-import { BarCodeScanner, Permissions } from 'expo';
-import Touchable from 'react-native-platform-touchable';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { View, Animated } from 'react-native';
+import { Permissions } from 'expo';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Bins } from './Bins/Bins';
 import throttle from 'lodash/throttle';
 import {
@@ -22,20 +21,6 @@ class ScanViewInner extends React.Component {
       selectedBinId: null,
     };
     this.throttledHandleBarCodeRead = throttle(this.handleBarCodeRead, 4000);
-  }
-
-  componentDidUpdate() {
-    const { total, totalScanned } = this.props;
-    const { selectedBinId } = this.state;
-    // If all products have been scanned for a bin, end the scan
-    if (
-      selectedBinId &&
-      totalScanned(selectedBinId) === total(selectedBinId) &&
-      this.state.scan === true
-    ) {
-      this.endScan();
-      this.setState({ selectedBinId: 0 });
-    }
   }
 
   async handleStartScan() {
@@ -97,7 +82,14 @@ class ScanViewInner extends React.Component {
     const { productId } = this.props;
     const { selectedBinId } = this.state;
     console.log('barcode read');
-    this.props.saveScan(productId, selectedBinId, { data, type });
+    const allScanned = this.props.saveScan(productId, selectedBinId, {
+      data,
+      type,
+    });
+    if (allScanned) {
+      this.endScan();
+      this.setState({ selectedBinId: 0 });
+    }
   };
 
   render() {
@@ -117,7 +109,7 @@ class ScanViewInner extends React.Component {
           scan={scan}
           bins={bins}
           selectedBinId={selectedBinId}
-          onSelectBin={selectedBinId => this.handleSelectBin(selectedBinId)}
+          onSelectBin={selectedId => this.handleSelectBin(selectedId)}
           onExpand={() => this.endScan()}
         />
       </View>
@@ -134,12 +126,11 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  setHasCameraPermission: hasPermission => {
-    return new Promise(resolve => {
+  setHasCameraPermission: hasPermission =>
+    new Promise(resolve => {
       dispatch({ type: 'SET_HAS_CAMERA_PERMISSION', hasPermission });
       resolve(hasPermission);
-    });
-  },
+    }),
   saveScan: (productId, binId, scanData) =>
     dispatch(saveScanData(productId, binId, scanData)),
 });

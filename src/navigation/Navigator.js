@@ -1,11 +1,14 @@
+// @flow
 import { createStackNavigator } from 'react-navigation';
 import ProductScanContainer from '../components/ProductScan/ProductScanContainer';
+import type { Navigation } from '../types';
+
 export type NavigationObject = { navigation: Navigation };
 
 export const stackNavigatorScreens = {
   ProductScan: {
     screen: ProductScanContainer,
-    navigationOptions: ({ navigation }: NavigationObject) => ({
+    navigationOptions: () => ({
       header: null,
     }),
   },
